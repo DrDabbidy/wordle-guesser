@@ -12,4 +12,14 @@ list_ta = ta.group(1)[2:-2].split("\",\"")
 
 word_list = list_la + list_ta
 
-print(word_list)
+alphabet = "abcdefghijklmnopqrstuvwqyz"
+freq = []
+
+for letter in alphabet:
+    occurances = 0
+    for word in word_list:
+        if letter in word:
+            occurances += 1
+    freq.append(occurances)
+
+print(dict(zip(alphabet, freq)))
