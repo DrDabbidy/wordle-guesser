@@ -204,7 +204,7 @@ if __name__ == '__main__':
     # word_list = list_la + list_ta
     with open('word_list.pkl', 'rb') as f:
         word_list = pickle.load(f)
-    print(word_list[35])
+
     # print('done import')
     # print(word_list[155])
     # print(word_list)
