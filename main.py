@@ -231,27 +231,28 @@ def play_auto(word: str, word_list: list, verbose=True) -> int:
         process_data(guess, user_input, data)
 
 
-def play_greedy_manual(word_list: list) -> int:
-    full_word_list = word_list.copy()
+def play_greedy_manual(word_list: list, ans_list: list, second_guess=None) -> int:
     data = empty_data()
     i = 0
 
     while True:
         i += 1
-        word_list = get_word_list(word_list, data)
+        ans_list = get_word_list(ans_list, data)
 
         if i > 2:
-            print(word_list)
+            print(ans_list)
 
-        if len(word_list) == 1:
-            guess = word_list[0]
+        if len(ans_list) == 1:
+            guess = ans_list[0]
         elif i == 1:
-            guess = 'serai'
+            guess = 'aesir'
+        elif second_guess is not None and i == 2:
+            guess = second_guess[user_input]
         else:
-            guess = best_word_greedy(full_word_list, word_list)
+            guess = best_word_greedy(word_list, ans_list)
         
         try:
-            word_list.remove(guess)
+            ans_list.remove(guess)
         except:
             pass
         
@@ -264,25 +265,24 @@ def play_greedy_manual(word_list: list) -> int:
         process_data(guess, user_input, data)
 
 
-def play_greedy_auto(word: str, word_list: list, verbose=True, second_guess=None) -> int:
-    full_word_list = word_list.copy()
+def play_greedy_auto(word: str, word_list: list, ans_list: list, verbose=True, second_guess=None) -> int:
     data = empty_data()
     i = 0
 
     while True:
         i += 1
-        word_list = get_word_list(word_list, data)
-        if len(word_list) == 1:
-            guess = word_list[0]
+        ans_list = get_word_list(ans_list, data)
+        if len(ans_list) == 1:
+            guess = ans_list[0]
         elif i == 1:
-            guess = 'serai'
+            guess = 'aesir'
         elif second_guess is not None and i == 2:
             guess = second_guess[user_input]
         else:
-            guess = best_word_greedy(full_word_list, word_list)
+            guess = best_word_greedy(word_list, ans_list)
 
         try:
-            word_list.remove(guess)
+            ans_list.remove(guess)
         except:
             pass
 
@@ -296,20 +296,30 @@ def play_greedy_auto(word: str, word_list: list, verbose=True, second_guess=None
         process_data(guess, user_input, data)
 
 
-def get_second_words(word_list: list, first_word: str) -> None:
+def get_second_words(word_list: list, ans_list: list, first_word: str) -> None:
     d = {}
     word_list.remove(first_word)
 
-    for i, word in enumerate(word_list):
+    for i, word in enumerate(ans_list):
         feedback = check(first_word, word)
         if feedback not in d:
             data = empty_data()
             process_data(first_word, feedback, data)
-            d[feedback] = best_word_greedy(word_list, get_word_list(word_list, data))
+            d[feedback] = best_word_greedy(word_list, get_word_list(ans_list, data))
         print(i)
 
-    with open('second_guess.pkl', 'wb') as g:
+    with open('second_guess_two.pkl', 'wb') as g:
         pickle.dump(d, g)
+
+def get_coloring_scheme(word_list: list) -> None:
+    for w1 in word_list:
+        d = {}
+        for w2 in word_list:
+            if w1 != w2:
+                d[w2] = check(w1, w2)
+        with open(f'colour_codes/{w1}_codes.pkl', 'wb') as f:
+            pickle.dump(d, f)
+        print(w1)
 
 
 if __name__ == '__main__':
@@ -331,39 +341,34 @@ if __name__ == '__main__':
     with open('ans_list.pkl', 'rb') as f:
         ans_list = pickle.load(f)
         # pickle.dump(answer_list, f)
+    with open('second_guess_two.pkl', 'rb') as f:
+        second_guess_two = pickle.load(f)
     with open('second_guess.pkl', 'rb') as f:
         second_guess = pickle.load(f)
-    
-    
+
     # alg = input('Algorithm: ')
     # if alg == 'm':
     #     print(play_manual(word_list))
     # elif alg == 'a':
     #     print(play_auto(input('Word: '), word_list))
     # elif alg == 'gm':
-    #     print(play_greedy_manual(word_list))
+    #     print(play_greedy_manual(word_list, ans_list))
     # elif alg == 'ga':
-    #     print(play_greedy_auto(input('Word: '), word_list))
+    #     print(play_greedy_auto(input('Word: '), word_list, ans_list))
     # elif alg == 'gaa':
-    #     print(play_greedy_auto(input('Word: '), word_list, second_guess=second_guess))
-    
-    
-    # data = []
-    # for word in word_list:
-    #     print('new round')
-    #     data.append(play_greedy_auto(word, word_list))
-    # print(f'max {max(data)}')
-    # data = []
-    # i = 1
-    # for word in ans_list:
-    #     data.append(play_greedy_auto(word, word_list, verbose=False, second_guess=second_guess))
-    #     print(f'{i}: {word} {data[i-1]}')
-    #     i+=1
-    # count = 0
-    # for datum in data:
-    #     if datum <= 6: 
-    #         count += 1
-    # print(f'mean: {statistics.mean(data)}\nmedian: {statistics.median(data)}\nmax: {max(data)}\nsuccess rate: {count / len(data)}')
+    #     print(play_greedy_auto(input('Word: '), word_list, ans_list, second_guess=second_guess_two))
+
+    data = []
+    i = 1
+    for word in ans_list:
+        data.append(play_greedy_auto(word, word_list, ans_list, verbose=False, second_guess=second_guess_two))
+        print(f'{i}: {word} {data[i-1]}')
+        i+=1
+    count = 0
+    for datum in data:
+        if datum <= 6: 
+            count += 1
+    print(f'mean: {statistics.mean(data)}\nmedian: {statistics.median(data)}\nmax: {max(data)}\nsuccess rate: {count / len(data)}')
     
     
     # with open('data.txt') as f:
@@ -373,7 +378,7 @@ if __name__ == '__main__':
     #         ln = line.split(' ')
     #         word, val = ln[1], int(ln[2])
     #         data.append(val)
-    #         if val <= 6: 
+    #         if val < 6: 
     #             count += 1
     #         else:
     #             print(word)
