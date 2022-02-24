@@ -346,29 +346,29 @@ if __name__ == '__main__':
     with open('second_guess.pkl', 'rb') as f:
         second_guess = pickle.load(f)
 
-    # alg = input('Algorithm: ')
-    # if alg == 'm':
-    #     print(play_manual(word_list))
-    # elif alg == 'a':
-    #     print(play_auto(input('Word: '), word_list))
-    # elif alg == 'gm':
-    #     print(play_greedy_manual(word_list, ans_list))
-    # elif alg == 'ga':
-    #     print(play_greedy_auto(input('Word: '), word_list, ans_list))
-    # elif alg == 'gaa':
-    #     print(play_greedy_auto(input('Word: '), word_list, ans_list, second_guess=second_guess_two))
+    alg = input('Algorithm: ')
+    if alg == 'm':
+        print(play_manual(word_list))
+    elif alg == 'a':
+        print(play_auto(input('Word: '), word_list))
+    elif alg == 'gm':
+        print(play_greedy_manual(word_list, ans_list))
+    elif alg == 'ga':
+        print(play_greedy_auto(input('Word: '), word_list, ans_list))
+    elif alg == 'gaa':
+        print(play_greedy_auto(input('Word: '), word_list, ans_list, second_guess=second_guess_two))
 
-    data = []
-    i = 1
-    for word in ans_list:
-        data.append(play_greedy_auto(word, word_list, ans_list, verbose=False, second_guess=second_guess_two))
-        print(f'{i}: {word} {data[i-1]}')
-        i+=1
-    count = 0
-    for datum in data:
-        if datum <= 6: 
-            count += 1
-    print(f'mean: {statistics.mean(data)}\nmedian: {statistics.median(data)}\nmax: {max(data)}\nsuccess rate: {count / len(data)}')
+    # data = []
+    # i = 1
+    # for word in ans_list:
+    #     data.append(play_greedy_auto(word, word_list, ans_list, verbose=False, second_guess=second_guess_two))
+    #     print(f'{i}: {word} {data[i-1]}')
+    #     i+=1
+    # count = 0
+    # for datum in data:
+    #     if datum <= 6: 
+    #         count += 1
+    # print(f'mean: {statistics.mean(data)}\nmedian: {statistics.median(data)}\nmax: {max(data)}\nsuccess rate: {count / len(data)}')
     
     
     # with open('data.txt') as f:
